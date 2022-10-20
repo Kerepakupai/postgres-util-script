@@ -56,8 +56,23 @@ function uninstall_postgres {
 }
 
 function db_backup {
+
     echo "Backup database"
-    echo "Backup path $1"
+    local BAK_DIR="$(echo $HOME/mysql)"
+    local MYSQL="$(which mysql)"
+    local MYSQLDUMP="$(which mysqldump)"
+    local GZIP="$(which gzip)"
+
+    DB_USER=""
+    DB_PASS=""
+    HOST=""
+    DATABASE=""
+
+    echo "Backup path $BAK_DIR"
+    [[ ! -d $BAK_DIR ]] && mkdir -p "$BAK_DIR"
+    FILE=$BAK_DIR/$DATABASE.$NOW-$(date +"%T").gz
+    $MYSQLDUMP --single-transaction --set-gtid-purged=OFF -u $USER -h $HOST -p$PASS $DATABASE | $GZIP -9 > $FILE
+
 }
 
 function db_restore {
